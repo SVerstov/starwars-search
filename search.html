@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Star Wars Search</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+</head>
+<body>
+    <div id="app" class="container">
+        <h1 class="title">Star Wars Search</h1>
+        <div class="field has-addons">
+            <div class="control is-expanded">
+                <input class="input" type="text" placeholder="Search for characters, planets, or starships" v-model="searchTerm" @keyup.enter="search">
+            </div>
+            <div class="control">
+                <button class="button is-info" @click="search">Search</button>
+            </div>
+        </div>
+        <div v-if="loading">
+            <p>Loading...</p>
+        </div>
+        <div v-if="searchResults">
+            <h2 class="subtitle">Search Results</h2>
+            <div v-for="(results, type) in searchResults">
+                <h3 class="title">{{ type }}</h3>
+                <table class="table is-bordered is-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th v-for="field in fields[type]">{{ field }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="result in results">
+                            <td>{{ result.name }}</td>
+                            <td v-for="field in fields[type]">{{ result[field] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div v-if="errorMessage">
+            <p class="has-text-danger">{{ errorMessage }}</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const app = new Vue({
+            el: '#app',
+            data: {
+                searchTerm: '',
+                searchResults: null,
+                errorMessage: null,
+                loading: false,
+                fields: {
+                    people: ['height', 'mass'],
+                    planets: ['diameter', 'population'],
+                    starships: ['length', 'crew'],
+                },
+            },
+            methods: {
+                search() {
+                    if (this.searchTerm === '') {
+                        return;
+                    }
+
+                    this.loading = true;
+                    this.searchResults = null;
+                    this.errorMessage = null;
+
+                    axios.get('http://localhost:8000/api/', {params: {search: this.searchTerm}})
+                        .then(response => {
+                            this.searchResults = response.data.search_results;
+                            this.loading = false;
+                        })
+                        .catch(error => {
+                            this.errorMessage = error.message;
+                            this.loading = false;
+                        });
+                },
+            },
+        });
+    </script>
+
+</body>
+</html>
