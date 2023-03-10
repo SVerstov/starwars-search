@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--    <title>Star Wars Search</title>-->
+    <title style="background-image: linear-gradient(to right, #ff00cc, #333399); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 36px; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Star Wars Search</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <link rel="stylesheet" href="static/app.css">
+
+</head>
+<body>
+<div class="background">
+    <img src="static/back.jpeg"/>
+</div>
+
+<div id="app" class="container">
+
+
+    <h1 class="title has-text-centered sw-title">Star Wars Search</h1>
+    <div class="field has-addons">
+        <div class="control is-expanded">
+            <input class="input" type="text" placeholder="Search for characters, planets, or starships"
+                   v-model="searchTerm" @keyup.enter="search">
+        </div>
+        <div class="control">
+            <button class="button is-info" @click="search">Search</button>
+        </div>
+    </div>
+
+    <div v-if="loading" v-cloak>
+        <h3>Loading...</h3>
+    </div>
+
+
+    <div class="columns" v-cloak>
+        <div class="column is-one-third">
+            <figure class="image">
+                <img src="static/Yoda.png" width="30%" v-if="searchResults" v-cloak/>
+                <img src="static/dart.png" width="30%" v-if="noResults" v-cloak/></figure>
+        </div>
+        <div class="column is-two-third">
+
+            <div id="blockResult" v-cloak>
+                <div v-if="noResults">
+                    <br>
+                    <h2 class="title has-text-centered">Nothing found ;(</h2>
+                </div>
+                <div v-if="searchResults">
+                    <h2 class="subtitle">Search Results:</h2>
+                    <div v-for="(results, type) in searchResults">
+                        <h3 class="title">{{ type }}</h3>
+                        <table class="table is-bordered is-striped">
+                            <thead>
+                            <tr>
+                                <th v-for="field in fields[type]">{{ field }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="result in results">
+                                <td v-for="field in fields[type]">{{ result[field] }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                    </div>
+                </div>
+                <div v-if="errorMessage">
+                    <p class="has-text-danger">{{ errorMessage }}</p>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script src="https://unpkg.com/vue@next"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="static/app.js"></script>
+
+</body>
+</html>

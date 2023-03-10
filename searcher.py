@@ -1,16 +1,16 @@
 import aiohttp
+import settings
 
 
-class SWarsSearch:
+class StarWarsSearch:
     """ Universal class to search aby Star Wars items"""
-    base_url = 'https://swapi.dev/api/{type}/?search={search}'
 
     def __init__(self, type: str, fields: list):
         self.type = type
         self.fields = fields
 
     async def _make_request(self, search_string):
-        url = self.base_url.format(type=self.type, search=search_string)
+        url = settings.api_url.format(type=self.type, search=search_string)
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status == 200:
@@ -23,9 +23,14 @@ class SWarsSearch:
         search_results = response['results']
         results_filtered = []
         for item in search_results:
-            results_filtered.append({
-                x: item[x] for x in self.fields
-            })
+            item_dict = {}
+            for field in self.fields:
+                try:
+                    item_dict[field] = item[field]
+                except KeyError:
+                    self.fields.remove(field)
+                    print(f'Поле {field} исключено, т.к отсутствует в результатах!')
+            results_filtered.append(item_dict)
         return results_filtered
 
     async def search(self, search_string):
@@ -35,3 +40,8 @@ class SWarsSearch:
             if len(results_filtered):
                 return {self.type: results_filtered}
         return {}
+
+
+search_list = [
+    StarWarsSearch(type=k, fields=v) for k, v in settings.search_fields.items()
+]
