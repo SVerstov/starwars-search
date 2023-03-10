@@ -7,7 +7,7 @@
 Проект написан на fastapi + vue3, использует API https://swapi.dev/
 Запросы к API выполняются асинхронно.
 
-![Screenshot_20230311_035303.png](Screenshot_20230311_035303.png)
+![Screenshot_20230311_035303.png](screens/Screenshot_20230311_035303.png)
 
 ## Настройка
 Можно настроить поля для поиска. Для этого в 
@@ -42,3 +42,5 @@ docker-compose не использовался, тк собирается лиш
 Сервис можно использовать отдельно как API, например:
 
 http://127.0.0.1:8000/api/?search=luke
+
+![Screenshot_20230311_035705.png](screens%2FScreenshot_20230311_035705.png)
